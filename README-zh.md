@@ -10,6 +10,8 @@
 
 GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOARCH=loong64 CGO_ENABLED=0` 交叉编译，并使用兼容 loong64 的基础镜像构建 Docker 镜像。目标平台：`linux/loong64`。
 
+关于 Debian 13 容器选型的理由，详见 [Discussion #6 — 为什么使用 container: debian:13？](https://github.com/orgs/kubernetes-loong64/discussions/6)。
+
 ## 分支命名
 
 推送 `loong64/<coredns 版本>` 格式的分支（如 `loong64/v1.14.3`）即可触发构建。

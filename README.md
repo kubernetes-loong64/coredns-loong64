@@ -10,6 +10,8 @@ Build [CoreDNS](https://github.com/coredns/coredns) binaries and Docker images f
 
 A GitHub Actions workflow clones the specified CoreDNS version, cross-compiles with `GOOS=linux GOARCH=loong64 CGO_ENABLED=0`, and builds a Docker image using a loong64-compatible base image. Target platform: `linux/loong64`.
 
+See [Discussion #6 — Why Use container: debian:13?](https://github.com/orgs/kubernetes-loong64/discussions/6) for the rationale behind the Debian 13 container choice.
+
 ## Branch naming
 
 Push a branch named `loong64/<coredns-version>` (e.g. `loong64/v1.14.3`) to trigger a build.
