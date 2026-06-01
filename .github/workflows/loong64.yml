@@ -110,3 +110,9 @@ jobs:
           docker save -o coredns-loong64.tar $(docker images registry.k8s.io/coredns/coredns --format "{{.ID}}")
           ls -lha
           tar -xOf coredns-loong64.tar repositories || tar -xOf coredns-loong64.tar manifest.json | jq
+      - name: Upload container images
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: coredns-loong64-images
+          path: |
+            coredns/coredns-loong64.tar
