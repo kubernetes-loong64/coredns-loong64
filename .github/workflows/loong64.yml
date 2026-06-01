@@ -91,3 +91,19 @@ jobs:
           name: coredns-loong64-binaries
           path: |
             coredns/coredns
+      - name: Build Docker image
+        working-directory: coredns
+        env:
+          DOCKER_BUILDKIT: 1
+        run: |
+          echo "=== Before Docker build ==="
+          docker images
+          echo "=== Starting Docker build ==="
+          docker build \
+            --platform=${{ env.GOARCH }} \
+            -t registry.k8s.io/coredns/coredns:${{ env.GOARCH }}-${{ env.COREDNS_BRANCH }} \
+            --build-arg=DEBIAN_IMAGE=ghcr.io/loong64/debian:trixie-slim \
+            --build-arg=BASE=ghcr.io/loong64/debian:trixie-slim \
+            .
+          echo "=== After Docker build ==="
+          docker images
