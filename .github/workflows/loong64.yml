@@ -107,3 +107,6 @@ jobs:
             .
           echo "=== After Docker build ==="
           docker images
+          docker save -o coredns-loong64.tar $(docker images registry.k8s.io/coredns/coredns --format "{{.ID}}")
+          ls -lha
+          tar -xOf coredns-loong64.tar repositories || tar -xOf coredns-loong64.tar manifest.json | jq
