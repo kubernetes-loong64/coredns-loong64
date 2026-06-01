@@ -71,9 +71,9 @@ jobs:
           ls -la /run/docker.sock 2>/dev/null || echo "/run/docker.sock not found"
           echo "DOCKER_HOST=$DOCKER_HOST"
           docker info
-      - name: Apply patches
-        working-directory: coredns
-        run: git apply ../*.patch
+      #- name: Apply patches
+      #  working-directory: coredns
+      #  run: git apply ../*.patch
       - name: Build CoreDNS
         working-directory: coredns
         run: make
