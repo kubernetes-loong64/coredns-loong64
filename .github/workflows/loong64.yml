@@ -77,3 +77,8 @@ jobs:
       - name: Build CoreDNS
         working-directory: coredns
         run: make
+      - name: Inspect binary file types
+        working-directory: coredns
+        run: |
+          echo "=== coredns ==="
+          file coredns
