@@ -2,17 +2,22 @@ name: loong64
 on:
   push:
     branches:
-      - loong64/*
+      - loong64-*
     tags:
-      - release-loong64/*/*
+      - release-loong64-*
   pull_request:
     branches:
-      - loong64/*
+      - loong64-*
+
+env:
+  COREDNS_IMAGE: ${{ vars.COREDNS_IMAGE || 'kubernetesloong64/coredns-loong64' }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
     container: debian:13
+    outputs:
+      DOCKER_TAG: ${{ steps.extract.outputs.DOCKER_TAG }}
     permissions:
       contents: read
     env:
@@ -29,15 +34,23 @@ jobs:
             echo ${{ github.ref_name }}
           fi
       - name: Extract CoreDNS branch
+        id: extract
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
             REF=${{ github.base_ref }}
           else
             REF=${{ github.ref_name }}
           fi
-          COREDNS_BRANCH=$(echo $REF | awk -F'/' '{print $2}')
+          echo "REF=$REF"
+          PROJECT_COREDNS_VERSION=$(echo $REF | awk -F'loong64-' '{print $2}')
+          echo "PROJECT_COREDNS_VERSION=$PROJECT_COREDNS_VERSION"
+          COREDNS_BRANCH=$(echo $PROJECT_COREDNS_VERSION | sed 's/+.*//')
           echo "COREDNS_BRANCH=$COREDNS_BRANCH"
           echo "COREDNS_BRANCH=$COREDNS_BRANCH" >> ${GITHUB_ENV}
+          DOCKER_TAG=$(echo $PROJECT_COREDNS_VERSION | sed 's/+/-/g')
+          echo "DOCKER_TAG=$DOCKER_TAG"
+          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_ENV}
+          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
       - name: Clone CoreDNS
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -80,6 +93,10 @@ jobs:
       - name: Build CoreDNS
         working-directory: coredns
         run: make
+      - name: Print binary SHA-256 checksums
+        working-directory: coredns
+        run: |
+          sha256sum coredns
       - name: Inspect binary file types
         working-directory: coredns
         run: |
@@ -105,11 +122,22 @@ jobs:
             --build-arg=DEBIAN_IMAGE=ghcr.io/loong64/debian:trixie-slim \
             --build-arg=BASE=ghcr.io/loong64/debian:trixie-slim \
             .
-          echo "=== After Docker build ==="
+          echo "=== After build ==="
           docker images
-          docker save -o coredns-loong64.tar $(docker images registry.k8s.io/coredns/coredns --format "{{.ID}}")
-          ls -lha
-          tar -xOf coredns-loong64.tar repositories || tar -xOf coredns-loong64.tar manifest.json | jq
+          IMAGE_REF=$(docker images ${{ env.COREDNS_IMAGE }} --format "{{.Repository}}:{{.Tag}}")
+          echo "=== Saving $IMAGE_REF ==="
+          docker save -o coredns-loong64.tar $IMAGE_REF
+          echo "=== Image tarball ==="
+          ls -lha coredns-loong64.tar
+          echo "=== Manifest ==="
+          echo "--- repositories ---"
+          tar -xOf coredns-loong64.tar repositories
+          echo "--- manifest.json ---"
+          tar -xOf coredns-loong64.tar manifest.json | jq
+          echo "--- config ---"
+          tar -xOf coredns-loong64.tar $(tar -xOf coredns-loong64.tar manifest.json | jq -r '.[0].Config') | jq
+          echo "--- os, architecture ---"
+          tar -xOf coredns-loong64.tar $(tar -xOf coredns-loong64.tar manifest.json | jq -r '.[0].Config') | jq '{os, architecture}'
       - name: Upload container images
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
