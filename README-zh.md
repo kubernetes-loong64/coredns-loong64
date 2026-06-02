@@ -48,13 +48,13 @@ Release 并上传构建产物和 Docker 镜像。
 
 Docker 镜像推送至：
 
-- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
-- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
+- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?sort=semver&arch=loong64&logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
+- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?sort=semver&arch=loong64&logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
 
-| 镜像 | 描述 |
-|------|------|
-| `kubernetesloong64/coredns:<tag>` | K8s 兼容干净标签（仅正式版） |
-| `kubernetesloong64/coredns:<tag>` | 带元数据的标准标签 |
+| 镜像                                        | 描述                |
+|-------------------------------------------|-------------------|
+| `kubernetesloong64/coredns:<tag>`         | K8s 兼容干净标签（仅正式版）  |
+| `kubernetesloong64/coredns:<tag>`         | 带元数据的标准标签         |
 | `kubernetesloong64/coredns-loong64:<tag>` | 含 loong64 架构后缀的标签 |
 
 `release-loong64-v1.14.3+0` 发布示例：

@@ -51,14 +51,14 @@ Each file has a corresponding `.asc` detached GPG signature.
 
 Docker images are pushed to:
 
-- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
-- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
+- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?sort=semver&arch=loong64&logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
+- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?sort=semver&arch=loong64&logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
 
-| Image                                     | Description                  |
-|-------------------------------------------|------------------------------|
+| Image                                     | Description                            |
+|-------------------------------------------|----------------------------------------|
 | `kubernetesloong64/coredns:<tag>`         | K8s-compatible clean tag (stable only) |
-| `kubernetesloong64/coredns:<tag>`         | Standard tag with metadata   |
-| `kubernetesloong64/coredns-loong64:<tag>` | Tag with loong64 arch suffix |
+| `kubernetesloong64/coredns:<tag>`         | Standard tag with metadata             |
+| `kubernetesloong64/coredns-loong64:<tag>` | Tag with loong64 arch suffix           |
 
 Example for `release-loong64-v1.14.3+0`:
 
