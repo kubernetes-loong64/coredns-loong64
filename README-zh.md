@@ -8,9 +8,11 @@
 
 ## 工作原理
 
-GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOARCH=loong64 CGO_ENABLED=0` 交叉编译，并使用兼容 loong64 的基础镜像构建 Docker 镜像。目标平台：`linux/loong64`。
+GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOARCH=loong64 CGO_ENABLED=0` 交叉编译，并使用兼容 loong64
+的基础镜像构建 Docker 镜像。目标平台：`linux/loong64`。
 
-关于 Debian 13 容器选型的理由，详见 [Discussion #6 — 为什么使用 container: debian:13？](https://github.com/orgs/kubernetes-loong64/discussions/6)。
+关于 Debian 13
+容器选型的理由，详见 [Discussion #6 — 为什么使用 container: debian:13？](https://github.com/orgs/kubernetes-loong64/discussions/6)。
 
 ## 分支命名
 
@@ -18,7 +20,8 @@ GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOAR
 
 ## [发布](https://github.com/kubernetes-loong64/coredns-loong64/releases)
 
-推送 `release-loong64/<coredns 版本>/<序号>` 格式的标签（如 `release-loong64/v1.14.3/1-alpha.1`）即可自动创建 GitHub Release 并上传构建产物和 Docker 镜像。
+推送 `release-loong64/<coredns 版本>/<序号>` 格式的标签（如 `release-loong64/v1.14.3/1-alpha.1`）即可自动创建 GitHub
+Release 并上传构建产物和 Docker 镜像。
 
 后缀表示发布阶段：
 
@@ -29,20 +32,48 @@ GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOAR
 | `rc`    | 预发布版 |
 | （无后缀）   | 正式版  |
 
-## 验证发布
+## 发布产物
 
-发布文件使用 GPG 签名。从 [keys.openpgp.org](https://keys.openpgp.org) 下载公钥 [F3693AB74BBA0D84C227AB34F3A4B5061568FC57](https://keys.openpgp.org/debug?q=F3693AB74BBA0D84C227AB34F3A4B5061568FC57)：
+每个发布包含以下文件：
 
-```shell
-gpg --keyserver keys.openpgp.org --recv-keys F3693AB74BBA0D84C227AB34F3A4B5061568FC57
-echo "F3693AB74BBA0D84C227AB34F3A4B5061568FC57:6:" | gpg --import-ownertrust
+| 文件                    | 描述            |
+|-----------------------|---------------|
+| `coredns`             | coredns 二进制文件 |
+| `coredns-loong64.tar` | Docker 镜像压缩包  |
+
+每个文件都有对应的 `.asc` 分离 GPG 签名。
+
+Docker 镜像推送至：
+
+- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
+- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
+
+| 镜像                                        | 描述              |
+|-------------------------------------------|-----------------|
+| `kubernetesloong64/coredns-loong64:<tag>` | 含 loong64 标签的镜像 |
+| `kubernetesloong64/coredns:<tag>`         | 标准镜像标签          |
+
+发布示例：
+
+```
+kubernetesloong64/coredns:v1.14.3-0
+kubernetesloong64/coredns-loong64:loong64-v1.14.3-0
 ```
 
-每个发布包含一个 `signatures.tar.gz`，内含所有构建产物的分离签名。验证步骤：
+## 验证发布
+
+- 发布文件使用 GPG 签名。
+- 从 [keys.openpgp.org](https://keys.openpgp.org) 下载公钥。
+- [FCF8724722CCBF9F51B1FBE376532BE7E3013105](https://keys.openpgp.org/debug?q=FCF8724722CCBF9F51B1FBE376532BE7E3013105)
 
 ```shell
-# 从发布页面下载 signatures.tar.gz，然后：
-tar -xzf signatures.tar.gz --strip-components=1
+gpg --keyserver keys.openpgp.org --recv-keys FCF8724722CCBF9F51B1FBE376532BE7E3013105
+echo "FCF8724722CCBF9F51B1FBE376532BE7E3013105:6:" | gpg --import-ownertrust
+```
+
+每个发布产物都有对应的 `.asc` 分离签名。验证时，从发布页面下载文件和对应的 `.asc` 签名文件，然后：
+
+```shell
 gpg --verify <文件>.asc <文件>
 ```
 

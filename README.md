@@ -4,13 +4,17 @@
 
 <p align="center"><img src="https://img.shields.io/badge/CoreDNS%20LoongArch64%20%E9%BE%99%E8%8A%AF%E6%9E%B6%E6%9E%84%E5%8F%91%E8%A1%8C%E7%89%88-blue?logo=docker&logoColor=white" alt="CoreDNS LoongArch64 龙芯架构发行版"></p>
 
-Build [CoreDNS](https://github.com/coredns/coredns) binaries and Docker images for the **LoongArch64 (loong64)** architecture via CI/CD.
+Build [CoreDNS](https://github.com/coredns/coredns) binaries and Docker images for the **LoongArch64 (loong64)**
+architecture via CI/CD.
 
 ## How it works
 
-A GitHub Actions workflow clones the specified CoreDNS version, cross-compiles with `GOOS=linux GOARCH=loong64 CGO_ENABLED=0`, and builds a Docker image using a loong64-compatible base image. Target platform: `linux/loong64`.
+A GitHub Actions workflow clones the specified CoreDNS version, cross-compiles with
+`GOOS=linux GOARCH=loong64 CGO_ENABLED=0`, and builds a Docker image using a loong64-compatible base image. Target
+platform: `linux/loong64`.
 
-See [Discussion #6 — Why Use container: debian:13?](https://github.com/orgs/kubernetes-loong64/discussions/6) for the rationale behind the Debian 13 container choice.
+See [Discussion #6 — Why Use container: debian:13?](https://github.com/orgs/kubernetes-loong64/discussions/6) for the
+rationale behind the Debian 13 container choice.
 
 ## Branch naming
 
@@ -18,7 +22,8 @@ Push a branch named `loong64/<coredns-version>` (e.g. `loong64/v1.14.3`) to trig
 
 ## [Release](https://github.com/kubernetes-loong64/coredns-loong64/releases)
 
-Push a tag matching `release-loong64/<coredns-version>/<sequence>` (e.g. `release-loong64/v1.14.3/1-alpha.1`) to publish a GitHub Release with the built binaries and Docker images.
+Push a tag matching `release-loong64/<coredns-version>/<sequence>` (e.g. `release-loong64/v1.14.3/1-alpha.1`) to publish
+a GitHub Release with the built binaries and Docker images.
 
 The suffix in the sequence indicates the release stage:
 
@@ -29,20 +34,49 @@ The suffix in the sequence indicates the release stage:
 | `rc`    | Pre-release   |
 | (none)  | Stable        |
 
-## Verify releases
+## Release artifacts
 
-Releases are signed with GPG. Download the public key from [keys.openpgp.org](https://keys.openpgp.org) [F3693AB74BBA0D84C227AB34F3A4B5061568FC57](https://keys.openpgp.org/debug?q=F3693AB74BBA0D84C227AB34F3A4B5061568FC57):
+Each release includes the following files:
 
-```shell
-gpg --keyserver keys.openpgp.org --recv-keys F3693AB74BBA0D84C227AB34F3A4B5061568FC57
-echo "F3693AB74BBA0D84C227AB34F3A4B5061568FC57:6:" | gpg --import-ownertrust
+| File                  | Description          |
+|-----------------------|----------------------|
+| `coredns`             | coredns binary       |
+| `coredns-loong64.tar` | Docker image tarball |
+
+Each file has a corresponding `.asc` detached GPG signature.
+
+Docker images are pushed to:
+
+- [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
+- [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
+
+| Image                                     | Description            |
+|-------------------------------------------|------------------------|
+| `kubernetesloong64/coredns-loong64:<tag>` | Image with loong64 tag |
+| `kubernetesloong64/coredns:<tag>`         | Standard image tag     |
+
+Example for a release:
+
+```
+kubernetesloong64/coredns:v1.14.3-0
+kubernetesloong64/coredns-loong64:loong64-v1.14.3-0
 ```
 
-Each release includes a `signatures.tar.gz` containing detached signatures for all artifacts. To verify:
+## Verify releases
+
+- Releases are signed with GPG.
+- Download the public key from [keys.openpgp.org](https://keys.openpgp.org).
+- [FCF8724722CCBF9F51B1FBE376532BE7E3013105](https://keys.openpgp.org/debug?q=FCF8724722CCBF9F51B1FBE376532BE7E3013105)
 
 ```shell
-# Download signatures.tar.gz from the release, then:
-tar -xzf signatures.tar.gz --strip-components=1
+gpg --keyserver keys.openpgp.org --recv-keys FCF8724722CCBF9F51B1FBE376532BE7E3013105
+echo "FCF8724722CCBF9F51B1FBE376532BE7E3013105:6:" | gpg --import-ownertrust
+```
+
+Each release artifact has a corresponding `.asc` detached signature. To verify, download both the file and its `.asc`
+signature from the release, then:
+
+```shell
 gpg --verify <file>.asc <file>
 ```
 
