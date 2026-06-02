@@ -63,9 +63,9 @@ Docker images are pushed to:
 Example for `release-loong64-v1.14.2+0`:
 
 ```
-kubernetesloong64/coredns:v1.14.2              # K8s-compatible clean tag (stable only)
-kubernetesloong64/coredns:v1.14.2-0            # Standard tag with build metadata
-kubernetesloong64/coredns-loong64:v1.14.2-0-loong64  # Tag with loong64 arch suffix
+kubernetesloong64/coredns:v1.14.2                   # K8s-compatible clean tag (stable only)
+kubernetesloong64/coredns:v1.14.2-0                 # Standard tag with build metadata
+kubernetesloong64/coredns-loong64:v1.14.2-0-loong64 # Tag with loong64 arch suffix
 ```
 
 ## Verify releases

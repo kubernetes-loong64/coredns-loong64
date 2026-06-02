@@ -60,9 +60,9 @@ Docker 镜像推送至：
 `release-loong64-v1.14.2+0` 发布示例：
 
 ```
-kubernetesloong64/coredns:v1.14.2              # K8s 兼容干净标签（仅正式版）
-kubernetesloong64/coredns:v1.14.2-0            # 带构建元数据的标准标签
-kubernetesloong64/coredns-loong64:v1.14.2-0-loong64  # 含 loong64 架构后缀的标签
+kubernetesloong64/coredns:v1.14.2                   # K8s 兼容干净标签（仅正式版）
+kubernetesloong64/coredns:v1.14.2-0                 # 带构建元数据的标准标签
+kubernetesloong64/coredns-loong64:v1.14.2-0-loong64 # 含 loong64 架构后缀的标签
 ```
 
 ## 验证发布
