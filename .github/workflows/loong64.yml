@@ -19,6 +19,7 @@ jobs:
     outputs:
       DOCKER_TAG: ${{ steps.extract.outputs.DOCKER_TAG }}
       DOCKER_TAG_K8S: ${{ steps.extract.outputs.DOCKER_TAG_K8S }}
+      IS_STABLE: ${{ steps.extract.outputs.IS_STABLE }}
     permissions:
       contents: read
     env:
@@ -54,8 +55,15 @@ jobs:
           echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S"
           echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_ENV}
           echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S" >> ${GITHUB_ENV}
+          if echo "$PROJECT_COREDNS_VERSION" | grep -qE '[+].*(alpha|beta|rc)'; then
+            IS_STABLE=false
+          else
+            IS_STABLE=true
+          fi
+          echo "IS_STABLE=$IS_STABLE"
           echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
           echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S" >> ${GITHUB_OUTPUT}
+          echo "IS_STABLE=$IS_STABLE" >> ${GITHUB_OUTPUT}
       - name: Clone CoreDNS
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
@@ -159,6 +167,7 @@ jobs:
     env:
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
       DOCKER_TAG_K8S: ${{ needs.build.outputs.DOCKER_TAG_K8S }}
+      IS_STABLE: ${{ needs.build.outputs.IS_STABLE }}
     steps:
       - name: Download binaries
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -194,10 +203,17 @@ jobs:
           echo "=== Tagging and pushing $ALT_IMAGE_REF ==="
           docker tag $IMAGE_REF $ALT_IMAGE_REF
           docker push $ALT_IMAGE_REF
-          K8S_IMAGE_REF=$ALT_IMAGE:${{ env.DOCKER_TAG_K8S }}
-          echo "=== Tagging and pushing $K8S_IMAGE_REF ==="
-          docker tag $IMAGE_REF $K8S_IMAGE_REF
-          docker push $K8S_IMAGE_REF
+          if [ "${{ env.IS_STABLE }}" = "true" ]; then
+            K8S_IMAGE_REF=$ALT_IMAGE:${{ env.DOCKER_TAG_K8S }}
+            echo "=== Tagging and pushing $K8S_IMAGE_REF ==="
+            docker tag $IMAGE_REF $K8S_IMAGE_REF
+            docker push $K8S_IMAGE_REF
+            K8S_TAG_LINE="kubernetesloong64/coredns:${{ env.DOCKER_TAG_K8S }}"
+          else
+            echo "=== Skipping K8s-compatible tag (pre-release) ==="
+            K8S_TAG_LINE="# Pre-release: skip K8s-compatible tag"
+          fi
+          echo "K8S_TAG_LINE=$K8S_TAG_LINE" >> ${GITHUB_ENV}
           echo "=== Push complete ==="
       - name: Import GPG key
         run: |
@@ -229,7 +245,7 @@ jobs:
           ## Docker image
 
           ```
-          kubernetesloong64/coredns:${{ env.DOCKER_TAG_K8S }}
+          ${{ env.K8S_TAG_LINE }}
           kubernetesloong64/coredns:${{ env.DOCKER_TAG }}
           kubernetesloong64/coredns-loong64:${{ env.DOCKER_TAG }}-loong64
           ```
