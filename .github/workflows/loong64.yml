@@ -118,7 +118,7 @@ jobs:
           echo "=== Starting Docker build ==="
           docker build \
             --platform=${{ env.GOARCH }} \
-            -t registry.k8s.io/coredns/coredns:${{ env.GOARCH }}-${{ env.COREDNS_BRANCH }} \
+            -t ${{ env.COREDNS_IMAGE }}/coredns/coredns:${{ env.GOARCH }}-${{ env.COREDNS_BRANCH }} \
             --build-arg=DEBIAN_IMAGE=ghcr.io/loong64/debian:trixie-slim \
             --build-arg=BASE=ghcr.io/loong64/debian:trixie-slim \
             .
