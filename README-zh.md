@@ -16,12 +16,15 @@ GitHub Actions 工作流克隆指定的 CoreDNS 版本，使用 `GOOS=linux GOAR
 
 ## 分支命名
 
-推送 `loong64/<coredns 版本>` 格式的分支（如 `loong64/v1.14.3`）即可触发构建。
+推送 `loong64-<coredns 版本>` 格式的分支（如 `loong64-v1.14.3`）即可触发构建。可追加 `+<build>`
+（如 `loong64-v1.14.3+0`）携带构建元数据。
 
 ## [发布](https://github.com/kubernetes-loong64/coredns-loong64/releases)
 
-推送 `release-loong64/<coredns 版本>/<序号>` 格式的标签（如 `release-loong64/v1.14.3/1-alpha.1`）即可自动创建 GitHub
+推送 `release-loong64-<coredns 版本>` 格式的标签（如 `release-loong64-v1.14.3+0`）即可自动创建 GitHub
 Release 并上传构建产物和 Docker 镜像。
+
+`+<build>` 后缀提供构建元数据（如 `+0`、`+1-alpha.1`）。在 K8s 兼容标签中会被去除，在 Docker 标签中 `+` 会替换为 `-`。
 
 后缀表示发布阶段：
 
@@ -48,16 +51,18 @@ Docker 镜像推送至：
 - [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
 - [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
 
-| 镜像                                        | 描述              |
-|-------------------------------------------|-----------------|
-| `kubernetesloong64/coredns-loong64:<tag>` | 含 loong64 标签的镜像 |
-| `kubernetesloong64/coredns:<tag>`         | 标准镜像标签          |
+| 镜像 | 描述 |
+|------|------|
+| `kubernetesloong64/coredns:<tag>` | K8s 兼容干净标签（仅正式版） |
+| `kubernetesloong64/coredns:<tag>` | 带元数据的标准标签 |
+| `kubernetesloong64/coredns-loong64:<tag>` | 含 loong64 架构后缀的标签 |
 
-发布示例：
+`release-loong64-v1.14.3+0` 发布示例：
 
 ```
-kubernetesloong64/coredns:v1.14.3-0
-kubernetesloong64/coredns-loong64:loong64-v1.14.3-0
+kubernetesloong64/coredns:v1.14.3              # K8s 兼容干净标签（仅正式版）
+kubernetesloong64/coredns:v1.14.3-0            # 带构建元数据的标准标签
+kubernetesloong64/coredns-loong64:v1.14.3-0-loong64  # 含 loong64 架构后缀的标签
 ```
 
 ## 验证发布

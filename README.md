@@ -18,14 +18,18 @@ rationale behind the Debian 13 container choice.
 
 ## Branch naming
 
-Push a branch named `loong64/<coredns-version>` (e.g. `loong64/v1.14.3`) to trigger a build.
+Push a branch named `loong64-<coredns-version>` (e.g. `loong64-v1.14.3`) to trigger a build. Append `+<build>`
+(e.g. `loong64-v1.14.3+0`) to include build metadata.
 
 ## [Release](https://github.com/kubernetes-loong64/coredns-loong64/releases)
 
-Push a tag matching `release-loong64/<coredns-version>/<sequence>` (e.g. `release-loong64/v1.14.3/1-alpha.1`) to publish
+Push a tag matching `release-loong64-<coredns-version>` (e.g. `release-loong64-v1.14.3+0`) to publish
 a GitHub Release with the built binaries and Docker images.
 
-The suffix in the sequence indicates the release stage:
+The `+<build>` suffix provides build metadata (e.g. `+0`, `+1-alpha.1`). It is stripped for the K8s-compatible
+tag and replaced with `-` for the Docker tag.
+
+The suffix in the build metadata indicates the release stage:
 
 | Suffix  | Stage         |
 |---------|---------------|
@@ -50,16 +54,18 @@ Docker images are pushed to:
 - [![kubernetesloong64/coredns](https://img.shields.io/docker/v/kubernetesloong64/coredns?logo=docker&label=kubernetesloong64%2Fcoredns)](https://hub.docker.com/r/kubernetesloong64/coredns/tags)
 - [![kubernetesloong64/coredns-loong64](https://img.shields.io/docker/v/kubernetesloong64/coredns-loong64?logo=docker&label=kubernetesloong64%2Fcoredns-loong64)](https://hub.docker.com/r/kubernetesloong64/coredns-loong64/tags)
 
-| Image                                     | Description            |
-|-------------------------------------------|------------------------|
-| `kubernetesloong64/coredns-loong64:<tag>` | Image with loong64 tag |
-| `kubernetesloong64/coredns:<tag>`         | Standard image tag     |
+| Image                                     | Description                  |
+|-------------------------------------------|------------------------------|
+| `kubernetesloong64/coredns:<tag>`         | K8s-compatible clean tag (stable only) |
+| `kubernetesloong64/coredns:<tag>`         | Standard tag with metadata   |
+| `kubernetesloong64/coredns-loong64:<tag>` | Tag with loong64 arch suffix |
 
-Example for a release:
+Example for `release-loong64-v1.14.3+0`:
 
 ```
-kubernetesloong64/coredns:v1.14.3-0
-kubernetesloong64/coredns-loong64:loong64-v1.14.3-0
+kubernetesloong64/coredns:v1.14.3              # K8s-compatible clean tag (stable only)
+kubernetesloong64/coredns:v1.14.3-0            # Standard tag with build metadata
+kubernetesloong64/coredns-loong64:v1.14.3-0-loong64  # Tag with loong64 arch suffix
 ```
 
 ## Verify releases
