@@ -118,7 +118,7 @@ jobs:
           echo "=== Starting Docker build ==="
           docker build \
             --platform=${{ env.GOARCH }} \
-            -t ${{ env.COREDNS_IMAGE }}:${{ env.GOARCH }}-${{ env.COREDNS_BRANCH }} \
+            -t ${{ env.COREDNS_IMAGE }}:$DOCKER_TAG-${{ env.GOARCH }} \
             --build-arg=DEBIAN_IMAGE=ghcr.io/loong64/debian:trixie-slim \
             --build-arg=BASE=ghcr.io/loong64/debian:trixie-slim \
             .
@@ -207,8 +207,8 @@ jobs:
           cat > release-body.md <<'BODYEOF'
           ## Artifacts
 
-          | File               | Download                                       |
-          |--------------------|------------------------------------------------|
+          | File                  | Download                                                       |
+          |-----------------------|----------------------------------------------------------------|
           | `coredns`             | [coredns](${{ env.BASE_URL }}/coredns)                         |
           | `coredns-loong64.tar` | [coredns-loong64.tar](${{ env.BASE_URL }}/coredns-loong64.tar) |
 
@@ -218,7 +218,7 @@ jobs:
 
           ```
           kubernetesloong64/coredns:${{ env.DOCKER_TAG }}
-          kubernetesloong64/coredns-loong64:loong64-${{ env.DOCKER_TAG }}
+          kubernetesloong64/coredns-loong64:${{ env.DOCKER_TAG }}-loong64
           ```
 
           Download and load the image:
