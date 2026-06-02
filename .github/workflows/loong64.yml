@@ -270,5 +270,6 @@ jobs:
         with:
           name: ${{ github.ref_name }}
           body_path: release-body.md
+          prerelease: ${{ env.IS_STABLE == 'false' }}
           files: |
             loong64-artifacts/**
