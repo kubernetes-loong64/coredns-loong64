@@ -18,7 +18,7 @@ jobs:
     container: debian:13
     outputs:
       DOCKER_TAG: ${{ steps.extract.outputs.DOCKER_TAG }}
-      DOCKER_TAG_K8S: ${{ steps.extract.outputs.DOCKER_TAG_K8S }}
+      DOCKER_TAG_K8S_COMPAT: ${{ steps.extract.outputs.DOCKER_TAG_K8S_COMPAT }}
       IS_STABLE: ${{ steps.extract.outputs.IS_STABLE }}
     permissions:
       contents: read
@@ -44,25 +44,25 @@ jobs:
             REF=${{ github.ref_name }}
           fi
           echo "REF=$REF"
-          PROJECT_COREDNS_VERSION=$(echo $REF | awk -F'loong64-' '{print $2}')
-          echo "PROJECT_COREDNS_VERSION=$PROJECT_COREDNS_VERSION"
-          COREDNS_BRANCH=$(echo $PROJECT_COREDNS_VERSION | sed 's/+.*//')
+          RAW_VERSION=$(echo $REF | awk -F'loong64-' '{print $2}')
+          echo "RAW_VERSION=$RAW_VERSION"
+          COREDNS_BRANCH=$(echo $RAW_VERSION | awk -F'+' '{print $1}')
           echo "COREDNS_BRANCH=$COREDNS_BRANCH"
           echo "COREDNS_BRANCH=$COREDNS_BRANCH" >> ${GITHUB_ENV}
-          DOCKER_TAG=$(echo $PROJECT_COREDNS_VERSION | sed 's/+/-/g')
+          DOCKER_TAG=$(echo $RAW_VERSION | sed 's/+/-/g')
           echo "DOCKER_TAG=$DOCKER_TAG"
-          DOCKER_TAG_K8S=$(echo $PROJECT_COREDNS_VERSION | sed 's/+.*//')
-          echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S"
           echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_ENV}
-          echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S" >> ${GITHUB_ENV}
-          if echo "$PROJECT_COREDNS_VERSION" | grep -qE '[+].*(alpha|beta|rc)'; then
+          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
+          DOCKER_TAG_K8S_COMPAT=$(echo $RAW_VERSION | awk -F'+' '{print $1}')
+          echo "DOCKER_TAG_K8S_COMPAT=$DOCKER_TAG_K8S_COMPAT"
+          echo "DOCKER_TAG_K8S_COMPAT=$DOCKER_TAG_K8S_COMPAT" >> ${GITHUB_ENV}
+          echo "DOCKER_TAG_K8S_COMPAT=$DOCKER_TAG_K8S_COMPAT" >> ${GITHUB_OUTPUT}
+          if echo "$RAW_VERSION" | grep -qE '[+].*(alpha|beta|rc)'; then
             IS_STABLE=false
           else
             IS_STABLE=true
           fi
           echo "IS_STABLE=$IS_STABLE"
-          echo "DOCKER_TAG=$DOCKER_TAG" >> ${GITHUB_OUTPUT}
-          echo "DOCKER_TAG_K8S=$DOCKER_TAG_K8S" >> ${GITHUB_OUTPUT}
           echo "IS_STABLE=$IS_STABLE" >> ${GITHUB_OUTPUT}
       - name: Clone CoreDNS
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -165,8 +165,9 @@ jobs:
     permissions:
       contents: write
     env:
+      BASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
       DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
-      DOCKER_TAG_K8S: ${{ needs.build.outputs.DOCKER_TAG_K8S }}
+      DOCKER_TAG_K8S_COMPAT: ${{ needs.build.outputs.DOCKER_TAG_K8S_COMPAT }}
       IS_STABLE: ${{ needs.build.outputs.IS_STABLE }}
     steps:
       - name: Download binaries
@@ -204,11 +205,11 @@ jobs:
           docker tag $IMAGE_REF $ALT_IMAGE_REF
           docker push $ALT_IMAGE_REF
           if [ "${{ env.IS_STABLE }}" = "true" ]; then
-            K8S_IMAGE_REF=$ALT_IMAGE:${{ env.DOCKER_TAG_K8S }}
+            K8S_IMAGE_REF=$ALT_IMAGE:${{ env.DOCKER_TAG_K8S_COMPAT }}
             echo "=== Tagging and pushing $K8S_IMAGE_REF ==="
             docker tag $IMAGE_REF $K8S_IMAGE_REF
             docker push $K8S_IMAGE_REF
-            K8S_TAG_LINE="kubernetesloong64/coredns:${{ env.DOCKER_TAG_K8S }}"
+            K8S_TAG_LINE="kubernetesloong64/coredns:${{ env.DOCKER_TAG_K8S_COMPAT }}"
           else
             echo "=== Skipping K8s-compatible tag (pre-release) ==="
             K8S_TAG_LINE="# Pre-release: skip K8s-compatible tag"
@@ -227,10 +228,6 @@ jobs:
             gpg --verify "$file".asc "$file"
           done
       - name: Generate release body
-        env:
-          BASE_URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}
-          DOCKER_TAG: ${{ needs.build.outputs.DOCKER_TAG }}
-          DOCKER_TAG_K8S: ${{ needs.build.outputs.DOCKER_TAG_K8S }}
         run: |
           cat > release-body.md <<'BODYEOF'
           ## Artifacts
