@@ -1,3 +1,22 @@
+# DCO Skill
+
+Every commit message must include a Developer Certificate of Origin (DCO) sign-off line.
+
+## Format
+
+- The commit message MUST end with a `Signed-off-by:` line
+- The sign-off line certifies that you have the right to submit the work under the project's license
+
+Format:
+
+```
+:shortcode: your commit message here
+
+Signed-off-by: Your Name <your.email@example.com>
+```
+
+---
+
 # Gitmoji Skill
 
 When committing, use the Shortcode column from the gitmoji reference table below as the commit message title prefix.
