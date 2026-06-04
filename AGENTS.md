@@ -6,13 +6,16 @@ Every commit message must include a Developer Certificate of Origin (DCO) sign-o
 
 - The commit message MUST end with a `Signed-off-by:` line
 - The sign-off line certifies that you have the right to submit the work under the project's license
+- The name and email in the sign-off line MUST match `git config user.name` and `git config user.email`
+
+Use `git commit -s` (or `--signoff`) to automatically append the sign-off line from your git config.
 
 Format:
 
 ```
 :shortcode: your commit message here
 
-Signed-off-by: Your Name <your.email@example.com>
+Signed-off-by: <git config user.name> <git config user.email>
 ```
 
 ---
