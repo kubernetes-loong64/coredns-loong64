@@ -64,15 +64,18 @@ jobs:
           fi
           echo "IS_STABLE=$IS_STABLE"
           echo "IS_STABLE=$IS_STABLE" >> ${GITHUB_OUTPUT}
+      - name: Clone CoreDNS
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          repository: coredns/coredns
+          ref: ${{ env.COREDNS_BRANCH }}
+          path: coredns
+      - name: ls
+        run: ls -lah
       - name: Install build tools
         run: |
           apt update
           apt install -y git make golang file jq
-      - name: Clone CoreDNS
-        run: |
-          git clone --branch ${{ env.COREDNS_BRANCH }} --depth 1 https://github.com/coredns/coredns.git coredns
-      - name: ls
-        run: ls -lah
       - name: Install Docker CLI
         run: |
           apt remove $(dpkg --get-selections docker.io docker-compose docker-doc podman-docker containerd runc | cut -f1)
