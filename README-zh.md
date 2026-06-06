@@ -76,6 +76,12 @@ gpg --keyserver keys.openpgp.org --recv-keys FCF8724722CCBF9F51B1FBE376532BE7E30
 echo "FCF8724722CCBF9F51B1FBE376532BE7E3013105:6:" | gpg --import-ownertrust
 ```
 
+或者，手动下载公钥文件后导入：
+
+```shell
+gpg --import /tmp/xxx
+```
+
 每个发布产物都有对应的 `.asc` 分离签名。验证时，从发布页面下载文件和对应的 `.asc` 签名文件，然后：
 
 ```shell
